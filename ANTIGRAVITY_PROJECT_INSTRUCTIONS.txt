@@ -1,0 +1,575 @@
+PROJECT INSTRUCTION FOR ANTIGRAVITY
+===================================
+
+Project:
+Software Quality Data Warehouse with Web-Mined Technology Trend Signals
+
+Goal:
+Build the complete college Module 5 project as a clean, working Python project. The project must use the supplied 50K GitHub Archive dataset, perform ETL, create a data warehouse design, execute OLAP analysis, perform web/text mining, clustering, association/episode rules, time-series analysis, graph mining, and provide a Streamlit dashboard.
+
+IMPORTANT WORKING RULES
+========================
+
+1. Work directly inside the existing GitHub repository for this project.
+2. Attach/use the repository as the project workspace and keep all generated source code, SQL, documentation, tests, and configuration inside the repository.
+3. The local dataset file is named exactly:
+
+   50kDATASET.csv
+
+4. The dataset is the 50K-row GitHub Archive export obtained from Google BigQuery.
+5. Do not replace the dataset with another source.
+6. Do not invent columns that do not exist in the dataset. Inspect the real CSV schema and payload_json before implementing transformations.
+7. The code must be executable and internally consistent.
+8. Do not leave placeholder functions, TODO implementations, fake outputs, or broken imports.
+9. Keep dependencies reasonable and compatible with Python 3.11/3.12.
+10. Use relative/project-root-safe paths. Do not hard-code the user's absolute computer path.
+11. Do not include unnecessary comments in source code. Prefer no comments. If a comment is genuinely necessary, use only a short single-line comment.
+12. Code should be clean, modular, readable, deterministic where practical, and suitable for GitHub.
+13. Test every major module before considering it complete.
+14. Do not silently swallow exceptions. Raise useful errors when required data or configuration is missing.
+15. Do not claim a metric exists unless it can actually be derived from the source data.
+16. Do not call every GitHub IssuesEvent a confirmed defect. Treat it as issue activity/defect proxy unless the available payload contains enough information for stronger classification.
+
+CURRENT DATASET
+===============
+
+Expected location:
+
+data/raw/50kDATASET.csv
+
+The BigQuery extraction used these fields:
+
+id
+created_at
+event_type
+developer
+repository
+payload_json
+
+The original extraction query selected GitHub Archive events:
+
+PushEvent
+PullRequestEvent
+PullRequestReviewEvent
+PullRequestReviewCommentEvent
+IssuesEvent
+IssueCommentEvent
+ForkEvent
+ReleaseEvent
+
+The payload_json field is a JSON string generated from the GitHub Archive payload. Parse it safely and derive only fields that are actually present.
+
+PROJECT STRUCTURE
+=================
+
+Keep or create this structure:
+
+software-quality-web-mining/
+│
+├── data/
+│   ├── raw/
+│   │   └── 50kDATASET.csv
+│   ├── processed/
+│   └── README.md
+│
+├── src/
+│   ├── __init__.py
+│   ├── etl/
+│   │   ├── __init__.py
+│   │   ├── extract.py
+│   │   ├── transform.py
+│   │   └── load.py
+│   ├── warehouse/
+│   │   ├── __init__.py
+│   │   ├── schema.py
+│   │   └── queries.py
+│   ├── mining/
+│   │   ├── __init__.py
+│   │   ├── text_mining.py
+│   │   ├── clustering.py
+│   │   ├── association_rules.py
+│   │   ├── time_series.py
+│   │   └── graph_mining.py
+│   └── utils/
+│       ├── __init__.py
+│       └── config.py
+│
+├── sql/
+│   ├── bigquery/
+│   │   └── github_archive.sql
+│   └── warehouse/
+│       ├── star_schema.sql
+│       └── olap_queries.sql
+│
+├── dashboard/
+│   └── app.py
+│
+├── notebooks/
+│   └── exploration.ipynb
+│
+├── tests/
+│   └── test_etl.py
+│
+├── docs/
+│   ├── architecture.md
+│   └── data_dictionary.md
+│
+├── requirements.txt
+├── .gitignore
+├── README.md
+└── LICENSE
+
+MODULE 5 COVERAGE
+==================
+
+The implementation must explicitly demonstrate these syllabus concepts:
+
+1. Data Warehouse
+2. OLTP vs OLAP
+3. ETL process
+4. ETL tools using Python/Pandas/SQL
+5. Data Warehouse design
+6. Star schema
+7. Snowflake schema
+8. OLAP queries
+9. Reporting/dashboard
+10. Web Mining
+11. Web Content Mining
+12. Web Structure Mining
+13. Web Usage Mining where the available event data supports it; do not falsely describe GitHub event data as browser page-navigation logs
+14. Text Mining
+15. Unstructured Text
+16. Episode Rule Discovery / association-style rules for text or technology combinations
+17. Hierarchy of Categories
+18. Text Clustering
+19. Time Series Analysis
+20. Graph Mining
+21. Data Mining Applications
+
+PROJECT ARCHITECTURE
+====================
+
+Source:
+GitHub Archive via Google BigQuery
+
+↓
+
+Raw:
+50kDATASET.csv
+
+↓
+
+ETL:
+Extract → Validate → Transform → Load
+
+↓
+
+Analytical Warehouse:
+Star schema plus a documented snowflake alternative
+
+Suggested logical dimensions:
+
+dim_time
+dim_developer
+dim_repository
+dim_event
+dim_technology
+
+Suggested fact table:
+
+fact_github_activity
+
+The actual schema must be adapted to the real source fields after inspection.
+
+OLAP operations to implement:
+
+Roll-up
+Drill-down
+Slice
+Dice
+Pivot
+
+These should be implemented as actual reusable SQL/Pandas functions, not just described in documentation.
+
+WEB/TEXT MINING
+===============
+
+Because GitHub Archive alone does not provide rich natural-language question text, use a practical technology/problem representation derived from the available GitHub event payload and repository/event metadata.
+
+If a Stack Exchange dataset/API is added later, structure the project so it can be integrated cleanly, but do not make the project fail when it is unavailable.
+
+For available GitHub data, implement:
+
+- technology extraction from repository names and payload fields where reliable
+- event/activity keyword extraction where meaningful
+- unstructured text processing only on fields that actually contain text
+- TF-IDF
+- keyword ranking
+- text clustering using TF-IDF + KMeans
+- association/episode-style technology combinations
+- category hierarchy such as:
+
+Software
+├── Development
+├── Web
+├── DevOps
+├── Databases
+├── Mobile
+├── Data
+└── Infrastructure
+
+Do not assign technologies using arbitrary random labels. Use deterministic mappings or extracted evidence.
+
+TIME SERIES
+===========
+
+Create reusable time-series analysis for:
+
+- daily activity
+- weekly activity
+- monthly activity if enough date range exists
+- event-type trends
+- repository activity trends
+- developer activity trends where useful
+
+Use pandas and suitable statistical/rolling methods.
+
+GRAPH MINING
+============
+
+Build a graph from relationships actually supported by the dataset, for example:
+
+Developer → Repository
+Repository → Event Type
+Developer → Event Type
+
+If technology relationships can be derived reliably:
+
+Repository → Technology
+
+Use NetworkX.
+
+Calculate useful graph metrics such as:
+
+- degree
+- weighted degree
+- connected components where appropriate
+- centrality where appropriate
+- top nodes
+
+Do not create fictional edges.
+
+STREAMLIT DASHBOARD
+===================
+
+The Streamlit application must be a real user-facing analytical interface.
+
+The end user should be able to select/filter things such as:
+
+- repository
+- developer
+- event type
+- date range
+- technology/category
+- metric
+
+The dashboard should present useful outputs such as:
+
+- KPI cards
+- activity trends
+- event distribution
+- top repositories
+- top developers
+- technology signals
+- clustering results
+- association/episode rules
+- time-series charts
+- graph/network insights
+- OLAP-style summaries
+- downloadable processed results where practical
+
+Use Plotly for interactive charts.
+
+Do not make the dashboard depend on a live BigQuery connection unless a clear configuration exists. The default dashboard should work from the processed local data generated from 50kDATASET.csv.
+
+ETL REQUIREMENTS
+================
+
+extract.py:
+- locate data/raw/50kDATASET.csv safely
+- load the CSV
+- validate required columns
+- report shape, columns, missing values, event distribution
+- return a DataFrame
+
+transform.py:
+- parse payload_json safely
+- normalize timestamps
+- clean developer/repository/event fields
+- remove invalid duplicate records when justified
+- derive useful analytical fields only when supported
+- produce processed datasets for warehouse/mining
+- avoid data leakage or fabricated values
+
+load.py:
+- load processed data into a local analytical database or structured warehouse representation
+- SQLite is acceptable and preferred for a self-contained MVP
+- create fact and dimension tables
+- support repeatable rebuilds
+
+WAREHOUSE REQUIREMENTS
+======================
+
+Implement a star schema.
+
+Minimum logical design:
+
+dim_time
+dim_developer
+dim_repository
+dim_event
+dim_technology
+fact_github_activity
+
+Document primary keys and foreign keys.
+
+Also document a snowflake schema alternative, for example by normalizing technology/category or repository-related dimensions where useful.
+
+Create actual schema creation code and SQL.
+
+OLAP REQUIREMENTS
+=================
+
+Implement reusable queries/functions for:
+
+Roll-up:
+aggregate activity from day → week → month
+
+Drill-down:
+month → week → day
+
+Slice:
+select one event type or one repository
+
+Dice:
+select multiple event types/repositories/date ranges
+
+Pivot:
+event type by time/repository or another useful analytical matrix
+
+Each must return a usable DataFrame or SQL result.
+
+QUALITY REQUIREMENTS
+====================
+
+Use:
+
+- pandas
+- numpy
+- sqlalchemy
+- scikit-learn
+- streamlit
+- plotly
+- networkx
+- nltk only if genuinely needed
+
+Avoid unnecessary dependencies.
+
+Handle:
+- missing values
+- malformed JSON
+- invalid timestamps
+- empty datasets
+- duplicate rows
+- insufficient data for clustering
+- insufficient data for association rules
+- dashboard filters returning no records
+
+Use functions with clear inputs/outputs.
+Keep modules independently testable.
+
+TESTING
+========
+
+Create meaningful tests for:
+
+- CSV extraction
+- required-column validation
+- JSON parsing
+- transformation
+- duplicate handling
+- warehouse loading
+- at least one OLAP operation
+- time-series generation
+- clustering with a small controlled dataset
+- graph construction
+
+Tests must run without requiring live BigQuery.
+
+README
+======
+
+Create a professional README containing:
+
+- project title
+- problem statement
+- objectives
+- architecture
+- data source
+- dataset setup
+- installation
+- execution instructions
+- ETL workflow
+- warehouse schema
+- OLAP operations
+- web/text mining methods
+- clustering
+- association rules
+- time-series analysis
+- graph mining
+- Streamlit usage
+- Module 5 syllabus mapping
+- limitations
+- future improvements
+- GitHub repository instructions
+
+The README must clearly state that the provided 50K dataset is a GitHub Archive extract obtained through BigQuery.
+
+DATA DOCUMENTATION
+==================
+
+Create docs/data_dictionary.md documenting every source and processed field.
+
+Create docs/architecture.md with a clean architecture explanation and ASCII diagram if useful.
+
+SQL
+===
+
+sql/bigquery/github_archive.sql should contain the extraction query used to obtain the 50K dataset.
+
+Use:
+
+SELECT
+  id,
+  created_at,
+  type AS event_type,
+  actor.login AS developer,
+  repo.name AS repository,
+  TO_JSON_STRING(payload) AS payload_json
+FROM
+  `githubarchive.day.20260901`
+WHERE
+  type IN (
+    'PushEvent',
+    'PullRequestEvent',
+    'PullRequestReviewEvent',
+    'PullRequestReviewCommentEvent',
+    'IssuesEvent',
+    'IssueCommentEvent',
+    'ForkEvent',
+    'ReleaseEvent'
+  )
+LIMIT 50000;
+
+Do not execute this query automatically unless BigQuery credentials/configuration are available.
+
+sql/warehouse/star_schema.sql:
+Create the analytical schema.
+
+sql/warehouse/olap_queries.sql:
+Include representative roll-up, drill-down, slice, dice and pivot SQL.
+
+CONFIGURATION
+=============
+
+Do not hard-code credentials.
+
+If any optional external source is supported, use environment variables.
+
+The default local project must run without external credentials after the 50kDATASET.csv file is placed in data/raw/.
+
+GITHUB
+======
+
+The entire project must be compatible with GitHub.
+
+Do not commit:
+
+- .venv
+- .idea
+- raw dataset files if the repository's policy/size makes that inappropriate
+- generated processed databases if they are large
+- credentials
+- .env
+- API keys
+
+Keep data/raw/50kDATASET.csv locally if necessary and document how to place it there.
+
+Use .gitignore appropriately.
+
+EXECUTION ORDER
+===============
+
+Implement and validate in this order:
+
+1. Inspect actual 50kDATASET.csv schema.
+2. Complete extract.py.
+3. Complete transform.py.
+4. Complete load.py.
+5. Create warehouse schema.
+6. Implement OLAP operations.
+7. Implement mining modules.
+8. Implement time-series analysis.
+9. Implement graph mining.
+10. Build Streamlit dashboard.
+11. Write tests.
+12. Run tests.
+13. Run ETL end-to-end.
+14. Run dashboard.
+15. Fix all errors.
+16. Update README and documentation.
+17. Commit all source changes.
+18. Push the finished project to the GitHub repository.
+
+IMPORTANT:
+Do not stop after generating the folder structure. Actually implement the modules and verify imports and execution.
+
+CODE STYLE
+==========
+
+No block comments.
+No long explanatory comments inside code.
+No unnecessary comments.
+Use descriptive names and clean functions.
+Use type hints where they improve clarity.
+Avoid overengineering.
+Avoid duplicated logic.
+Avoid magic numbers when a named constant is clearer.
+Prefer standard library functionality where sufficient.
+
+FINAL ACCEPTANCE CRITERIA
+=========================
+
+The project is considered complete only when:
+
+- 50kDATASET.csv is successfully read.
+- ETL completes successfully.
+- processed data is generated.
+- local warehouse/database is created successfully.
+- star schema exists.
+- snowflake design is documented.
+- OLAP operations work.
+- mining modules execute.
+- clustering executes safely.
+- association/episode analysis executes safely.
+- time-series analysis executes.
+- graph mining executes.
+- Streamlit dashboard starts successfully.
+- tests pass.
+- README and documentation are complete.
+- no broken imports remain.
+- no placeholder implementations remain.
+- project is ready to commit and push to GitHub.
+
+ANTIGRAVITY SHOULD WORK ON THE EXISTING REPOSITORY, NOT CREATE A SEPARATE UNRELATED PROJECT.
+Inspect the repository before changing files and preserve useful existing work.
